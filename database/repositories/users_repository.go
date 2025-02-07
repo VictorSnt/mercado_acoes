@@ -20,15 +20,34 @@ func (repo UsersRepository) Create(user DTO.CreateUser) error {
 	return result.Error
 }
 
-func (repo UsersRepository) FindAll() (user []models.User, err error) {
-	result := repo.Db.Find(&user)
-	return user, result.Error
+func (repo UsersRepository) FindAll() (userDtoList []DTO.DisplayUser, err error) {
+	var users []models.User
+	result := repo.Db.Find(&users)
+
+	if len(users) == 0 {
+		return userDtoList, gorm.ErrRecordNotFound
+	}
+
+	for _, user := range users {
+		userDTO := parseUserModelToDTO(user)
+		userDtoList = append(userDtoList, userDTO)
+	}
+
+	return userDtoList, result.Error
 }
 
 func (repo UsersRepository) FindById(id uint) (DTO.DisplayUser, error) {
 	var user models.User
 	result := repo.Db.First(&user, id)
-	displayUser := DTO.DisplayUser{ID: user.ID, Name: user.Name, Balance: user.Balance}
+	userDTO := parseUserModelToDTO(user)
 
-	return displayUser, result.Error
+	return userDTO, result.Error
+}
+
+func parseUserModelToDTO(user models.User) DTO.DisplayUser {
+	return DTO.DisplayUser{
+		ID:      user.ID,
+		Name:    user.Name,
+		Balance: user.Balance,
+	}
 }

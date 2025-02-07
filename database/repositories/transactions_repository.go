@@ -28,23 +28,49 @@ func (repo TransactionsRepository) Create(transactions DTO.CreateTransaction) er
 
 func (repo TransactionsRepository) FindByUserId(userId uint) (
 
-	transactions []models.Transaction,
+	transactionsDtoList []DTO.DisplayTransaction,
 	err error,
 ) {
-	result := repo.Db.Where("user_id = ?", userId).Find(&transactions)
+	var transactions []models.Transaction
+	statement := repo.Db.Where("user_id = ?", userId)
 
+	result := statement.Find(&transactions)
 	if len(transactions) == 0 {
-		return transactions, gorm.ErrRecordNotFound
+		return transactionsDtoList, gorm.ErrRecordNotFound
 	}
 
-	return transactions, result.Error
+	for _, transaction := range transactions {
+		transactionsDTO := parseTransactionModelToDTO(transaction)
+		transactionsDtoList = append(transactionsDtoList, transactionsDTO)
+	}
+
+	return transactionsDtoList, result.Error
 }
 
 func (repo TransactionsRepository) FindByEquitieId(equitieId uint) (
 
-	transactions []models.Transaction,
+	transactionsDtoList []DTO.DisplayTransaction,
 	err error,
 ) {
+	var transactions []models.Transaction
 	result := repo.Db.Where("equitie_id = ?", equitieId).Find(&transactions)
-	return transactions, result.Error
+
+	for _, transaction := range transactions {
+		transactionsDTO := parseTransactionModelToDTO(transaction)
+		transactionsDtoList = append(transactionsDtoList, transactionsDTO)
+	}
+
+	return transactionsDtoList, result.Error
+}
+
+func parseTransactionModelToDTO(transaction models.Transaction) DTO.DisplayTransaction {
+	return DTO.DisplayTransaction{
+		ID:              transaction.ID,
+		UserID:          transaction.UserID,
+		EquitieID:       transaction.EquitieID,
+		Type:            transaction.Type,
+		Quantity:        transaction.Quantity,
+		UnitPrice:       transaction.UnitPrice,
+		TransactionDate: transaction.TransactionDate,
+	}
 }

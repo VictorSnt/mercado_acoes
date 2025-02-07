@@ -23,12 +23,35 @@ func (repo EquitieRepository) Create(equitie DTO.CreateEquitie) error {
 	return result.Error
 }
 
-func (repo EquitieRepository) FindAll() (equities []models.Equitie, err error) {
+func (repo EquitieRepository) FindAll() (equitiesDtoList []DTO.DisplayEquitie, err error) {
+	var equities []models.Equitie
 	result := repo.Db.Find(&equities)
-	return equities, result.Error
+
+	if len(equities) == 0 {
+		return equitiesDtoList, gorm.ErrRecordNotFound
+	}
+
+	for _, equitie := range equities {
+		equitieDTO := parseEquitieModelToDTO(equitie)
+		equitiesDtoList = append(equitiesDtoList, equitieDTO)
+	}
+
+	return equitiesDtoList, result.Error
 }
 
-func (repo EquitieRepository) FindById(id uint) (equitie models.Equitie, err error) {
+func (repo EquitieRepository) FindById(id uint) (DTO.DisplayEquitie, error) {
+	var equitie models.Equitie
 	result := repo.Db.First(&equitie, id)
-	return equitie, result.Error
+
+	equitieDTO := parseEquitieModelToDTO(equitie)
+	return equitieDTO, result.Error
+}
+
+func parseEquitieModelToDTO(equitie models.Equitie) DTO.DisplayEquitie {
+	return DTO.DisplayEquitie{
+		ID:                    equitie.ID,
+		Name:                  equitie.Name,
+		CurrentPrince:         equitie.CurrentPrince,
+		PriceChangePercentage: equitie.CurrentPrince,
+	}
 }

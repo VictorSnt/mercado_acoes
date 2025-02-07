@@ -2,7 +2,7 @@ package models
 
 import "gorm.io/gorm"
 
-type Usuario struct {
+type User struct {
 	gorm.Model
 	Name    string
 	Balance float64

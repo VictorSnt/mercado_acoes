@@ -7,11 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type TransacoesRepository struct {
+type TransactionsRepository struct {
 	Db *gorm.DB
 }
 
-func (repo TransacoesRepository) Create(transactions DTO.CreateTransaction) error {
+func (repo TransactionsRepository) Create(transactions DTO.CreateTransaction) error {
 	result := repo.Db.Create(
 		&models.Transaction{
 			UserID:          transactions.UserID,
@@ -26,7 +26,7 @@ func (repo TransacoesRepository) Create(transactions DTO.CreateTransaction) erro
 	return result.Error
 }
 
-func (repo TransacoesRepository) FindByUserId(userId uint) (
+func (repo TransactionsRepository) FindByUserId(userId uint) (
 
 	transactions []models.Transaction,
 	err error,
@@ -40,7 +40,7 @@ func (repo TransacoesRepository) FindByUserId(userId uint) (
 	return transactions, result.Error
 }
 
-func (repo TransacoesRepository) FindByEquitieId(equitieId uint) (
+func (repo TransactionsRepository) FindByEquitieId(equitieId uint) (
 
 	transactions []models.Transaction,
 	err error,

@@ -7,19 +7,27 @@ import (
 	"gorm.io/gorm"
 )
 
-func GetConnection() (db *gorm.DB) {
-	db, err := gorm.Open(sqlite.Open("database/project.db"), &gorm.Config{})
+func GetConnection(dbUri string) (db *gorm.DB) {
+	db, err := gorm.Open(sqlite.Open(dbUri), &gorm.Config{})
+
 	if err != nil {
 		panic("failed to connect database")
 	}
-	Migrate(db)
+
+	err = Migrate(db)
+
+	if err != nil {
+		panic("failed to migrate database")
+	}
+
 	return db
 }
 
-func Migrate(db *gorm.DB) {
-	db.AutoMigrate(
+func Migrate(db *gorm.DB) error {
+	err := db.AutoMigrate(
+		&models.User{},
 		&models.Equitie{},
-		&models.Usuario{},
 		&models.Transaction{},
 	)
+	return err
 }

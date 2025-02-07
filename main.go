@@ -4,15 +4,17 @@ import (
 	"fmt"
 	"mercado/acoes/database"
 	"mercado/acoes/database/repositories"
+	"os"
 
 	"encoding/json"
 )
 
 func main() {
-	conn := database.GetConnection()
-	// trasactionRepository := repositories.TransacoesRepository{Db: conn}
+	dbUri := os.Getenv("DATABASE_URI")
+	conn := database.GetConnection(dbUri)
+	// trasactionRepository := repositories.TransactionsRepository{Db: conn}
 	// acoesRepository := repositories.EquitieRepository{Db: conn}
-	userRepository := repositories.UsuarioRepository{Db: conn}
+	userRepository := repositories.UsersRepository{Db: conn}
 
 	// err := userRepository.Create(DTO.CreateUser{Name: "João", Balance: 1000.0})
 
@@ -33,4 +35,5 @@ func main() {
 	}
 
 	fmt.Println(string(jsonUser))
+	// TODO: Implementar teste amanhã
 }

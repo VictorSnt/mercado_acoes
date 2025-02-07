@@ -7,12 +7,12 @@ import (
 	"gorm.io/gorm"
 )
 
-type UsuarioRepository struct {
+type UsersRepository struct {
 	Db *gorm.DB
 }
 
-func (repo UsuarioRepository) Create(user DTO.CreateUser) error {
-	result := repo.Db.Create(&models.Usuario{
+func (repo UsersRepository) Create(user DTO.CreateUser) error {
+	result := repo.Db.Create(&models.User{
 		Name:    user.Name,
 		Balance: user.Balance,
 	})
@@ -20,13 +20,13 @@ func (repo UsuarioRepository) Create(user DTO.CreateUser) error {
 	return result.Error
 }
 
-func (repo UsuarioRepository) FindAll() (user []models.Usuario, err error) {
+func (repo UsersRepository) FindAll() (user []models.User, err error) {
 	result := repo.Db.Find(&user)
 	return user, result.Error
 }
 
-func (repo UsuarioRepository) FindById(id uint) (DTO.DisplayUser, error) {
-	var user models.Usuario
+func (repo UsersRepository) FindById(id uint) (DTO.DisplayUser, error) {
+	var user models.User
 	result := repo.Db.First(&user, id)
 	displayUser := DTO.DisplayUser{ID: user.ID, Name: user.Name, Balance: user.Balance}
 

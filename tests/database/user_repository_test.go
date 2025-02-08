@@ -1,4 +1,4 @@
-package test
+package repository_test
 
 import (
 	"mercado/acoes/database/repositories"
@@ -17,14 +17,14 @@ func createUser(t *testing.T, tx *gorm.DB, newUser DTO.CreateUser) {
 }
 
 func TestCreateNewUser(t *testing.T) {
-	tx, teardown := setupTest(t)
+	tx, teardown := SetupTest(t)
 	defer teardown(t)
 
 	createUser(t, tx, DTO.CreateUser{Name: "Test User", Balance: 1000})
 }
 
 func TestGetUserById(t *testing.T) {
-	tx, teardown := setupTest(t)
+	tx, teardown := SetupTest(t)
 	defer teardown(t)
 
 	createUser(t, tx, DTO.CreateUser{Name: "Test User", Balance: 1000})
@@ -41,7 +41,7 @@ func TestGetUserById(t *testing.T) {
 }
 
 func TestFindListOfUsers(t *testing.T) {
-	tx, teardown := setupTest(t)
+	tx, teardown := SetupTest(t)
 	defer teardown(t)
 
 	createUser(t, tx, DTO.CreateUser{Name: "Test User", Balance: 1000})

@@ -36,4 +36,5 @@ func main() {
 
 	fmt.Println(string(jsonUser))
 	// TODO: Implementar teste amanhã
+
 }

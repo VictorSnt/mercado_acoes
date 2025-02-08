@@ -1,4 +1,4 @@
-package test
+package repository_test
 
 import (
 	"mercado/acoes/database"
@@ -17,7 +17,7 @@ func TestMain(m *testing.M) {
 	os.Exit(code)
 }
 
-func setupTest(t *testing.T) (*gorm.DB, func(t *testing.T)) {
+func SetupTest(t *testing.T) (*gorm.DB, func(t *testing.T)) {
 	tx := db.Begin()
 	if tx.Error != nil {
 		t.Fatalf("Failed to begin transaction: %v", tx.Error)

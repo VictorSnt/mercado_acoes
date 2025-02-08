@@ -1,4 +1,4 @@
-package test
+package repository_test
 
 import (
 	"mercado/acoes/database/repositories"
@@ -18,7 +18,7 @@ func CreateTransaction(t *testing.T, tx *gorm.DB, newTransaction DTO.CreateTrans
 }
 
 func TestCreateNewTransaction(t *testing.T) {
-	tx, teardown := setupTest(t)
+	tx, teardown := SetupTest(t)
 	defer teardown(t)
 	createUser(t, tx, DTO.CreateUser{Name: "Test User", Balance: 1000})
 	createEquitie(t, tx, DTO.CreateEquitie{
@@ -38,7 +38,7 @@ func TestCreateNewTransaction(t *testing.T) {
 }
 
 func TestFindTransactionByUserID(t *testing.T) {
-	tx, teardown := setupTest(t)
+	tx, teardown := SetupTest(t)
 	defer teardown(t)
 	createUser(t, tx, DTO.CreateUser{Name: "Test User", Balance: 1000})
 	createEquitie(t, tx, DTO.CreateEquitie{

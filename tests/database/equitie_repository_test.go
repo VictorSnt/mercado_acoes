@@ -1,4 +1,4 @@
-package test
+package repository_test
 
 import (
 	"mercado/acoes/database/repositories"
@@ -17,7 +17,7 @@ func createEquitie(t *testing.T, tx *gorm.DB, newEquitie DTO.CreateEquitie) {
 }
 
 func TestCreateNewEquitie(t *testing.T) {
-	tx, teardown := setupTest(t)
+	tx, teardown := SetupTest(t)
 	defer teardown(t)
 
 	createEquitie(t, tx, DTO.CreateEquitie{
@@ -28,7 +28,7 @@ func TestCreateNewEquitie(t *testing.T) {
 }
 
 func TestGetEquitieById(t *testing.T) {
-	tx, teardown := setupTest(t)
+	tx, teardown := SetupTest(t)
 	defer teardown(t)
 
 	createEquitie(t, tx, DTO.CreateEquitie{
@@ -49,7 +49,7 @@ func TestGetEquitieById(t *testing.T) {
 }
 
 func TestFindListOfEquities(t *testing.T) {
-	tx, teardown := setupTest(t)
+	tx, teardown := SetupTest(t)
 	defer teardown(t)
 
 	createEquitie(t, tx, DTO.CreateEquitie{

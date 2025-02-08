@@ -6,7 +6,7 @@ type CreateUser struct {
 }
 
 type DisplayUser struct {
-	ID      uint    `json:"id"`
+	ID      uint    `json:"user_id"`
 	Name    string  `json:"name"`
 	Balance float64 `json:"balance"`
 }

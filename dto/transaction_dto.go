@@ -7,7 +7,6 @@ type CreateTransaction struct {
 	EquitieID       uint
 	Type            string
 	Quantity        uint
-	UnitPrice       float64
 	TransactionDate time.Time
 }
 

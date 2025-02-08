@@ -2,6 +2,8 @@ package service_test
 
 import (
 	"mercado/acoes/database"
+	"mercado/acoes/database/repositories"
+	DTO "mercado/acoes/dto"
 	"os"
 	"testing"
 
@@ -24,5 +26,21 @@ func SetupTest(t *testing.T) (*gorm.DB, func(t *testing.T)) {
 	}
 	return tx, func(t *testing.T) {
 		tx.Rollback()
+	}
+}
+
+func CreateUser(t *testing.T, tx *gorm.DB, newUser DTO.CreateUser) {
+	err := repositories.UsersRepository{Db: tx}.Create(newUser)
+
+	if err != nil {
+		t.Fatalf("Error creating user %s: %v", newUser.Name, err)
+	}
+}
+
+func CreateEquitie(t *testing.T, tx *gorm.DB, newEquitie DTO.CreateEquitie) {
+	err := repositories.EquitiesRepository{Db: tx}.Create(newEquitie)
+
+	if err != nil {
+		t.Fatalf("Error creating equitie %s: %v", newEquitie.Name, err)
 	}
 }

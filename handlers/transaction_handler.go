@@ -34,9 +34,25 @@ func CreateEquiteTransaction(
 		response, _ := json.Marshal(errorResponse)
 		return response, http.StatusBadRequest
 	}
+	equitieDTO, err := EquitiesRepository.FindById(newTransaction.EquitieID)
+	if err != nil {
+		errorResponse := map[string]string{
+			"error": err.Error(),
+			"detail": fmt.Sprintf(
+				"error while finding equitie %d .",
+				newTransaction.EquitieID,
+			),
+		}
+		response, _ := json.Marshal(errorResponse)
+		return response, http.StatusBadRequest
+	}
 
-	var transactionCost float64 = float64(newTransaction.Quantity) * newTransaction.UnitPrice
-	err = services.ChargeUser(db, newTransaction.UserID, transactionCost)
+	var transactionValue float64 = float64(newTransaction.Quantity) * equitieDTO.CurrentPrince
+	err = services.UpdateUserBalance(
+		db, newTransaction.UserID,
+		transactionValue,
+		newTransaction.Type,
+	)
 	if err != nil {
 		errorResponse := map[string]string{
 			"error": err.Error(),

@@ -58,6 +58,6 @@ func parseEquitieModelToDTO(equitie models.Equitie) DTO.DisplayEquitie {
 		ID:                    equitie.ID,
 		Name:                  equitie.Name,
 		CurrentPrince:         equitie.CurrentPrince,
-		PriceChangePercentage: equitie.CurrentPrince,
+		PriceChangePercentage: equitie.PriceChangePercentage,
 	}
 }

@@ -1,6 +1,7 @@
 package repositories
 
 import (
+	"fmt"
 	"mercado/acoes/database/models"
 	DTO "mercado/acoes/dto"
 
@@ -11,15 +12,21 @@ type TransactionsRepository struct {
 	Db *gorm.DB
 }
 
-func (repo TransactionsRepository) Create(transactions DTO.CreateTransaction) error {
-	result := repo.Db.Create(
+func (repo TransactionsRepository) Create(transaction DTO.CreateTransaction) error {
+	var equitie models.Equitie
+	result := repo.Db.Find(&equitie, transaction.EquitieID)
+	if result.Error != nil {
+		return fmt.Errorf("fail to found equitie of transaction %d", result.Error)
+	}
+
+	result = repo.Db.Create(
 		&models.Transaction{
-			UserID:          transactions.UserID,
-			EquitieID:       transactions.EquitieID,
-			Type:            transactions.Type,
-			Quantity:        transactions.Quantity,
-			UnitPrice:       transactions.UnitPrice,
-			TransactionDate: transactions.TransactionDate,
+			UserID:          transaction.UserID,
+			EquitieID:       transaction.EquitieID,
+			Type:            transaction.Type,
+			Quantity:        transaction.Quantity,
+			UnitPrice:       equitie.CurrentPrince,
+			TransactionDate: transaction.TransactionDate,
 		},
 	)
 

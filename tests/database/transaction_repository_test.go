@@ -32,7 +32,6 @@ func TestCreateNewTransaction(t *testing.T) {
 		EquitieID:       1,
 		Type:            "buy",
 		Quantity:        10,
-		UnitPrice:       100,
 		TransactionDate: time.Now().Truncate(24 * time.Hour),
 	})
 }
@@ -52,7 +51,6 @@ func TestFindTransactionByUserID(t *testing.T) {
 		EquitieID:       1,
 		Type:            "buy",
 		Quantity:        10,
-		UnitPrice:       100,
 		TransactionDate: time.Now().Truncate(24 * time.Hour),
 	})
 	_, err := repositories.TransactionsRepository{Db: tx}.FindByUserId(1)

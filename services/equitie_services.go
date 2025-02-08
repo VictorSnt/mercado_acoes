@@ -88,15 +88,18 @@ func ValidadeUserEquitieTransaction(
 		if userEquitiesCount < newTransaction.Quantity {
 			return errors.New("insufficient equities for sale operation")
 		}
+
+		return nil
 	}
 
 	return errors.New("invalid transaction type in the new transaction")
 }
 
-func ChargeUser(
+func UpdateUserBalance(
 	db *gorm.DB,
 	userId uint,
 	transactionCost float64,
+	transactionType string,
 ) error {
 	UsersRepository := repositories.UsersRepository{Db: db}
 	user, err := UsersRepository.FindById(userId)
@@ -105,11 +108,21 @@ func ChargeUser(
 		return fmt.Errorf("user not found: %v", err)
 	}
 
-	if user.Balance < transactionCost {
-		return errors.New("insufficient balance")
+	switch transactionType {
+
+	case string(enums.TransactionBuyOperation):
+		if user.Balance < transactionCost {
+			return errors.New("insufficient balance")
+		}
+		user.Balance -= transactionCost
+
+	case string(enums.TransactionSaleOperation):
+		user.Balance += transactionCost
+
+	default:
+		return errors.New("invalid transaction type")
 	}
 
-	user.Balance -= transactionCost
 	err = UsersRepository.Update(user.ID, DTO.UpdateUserBalance{Balance: user.Balance})
 
 	if err != nil {

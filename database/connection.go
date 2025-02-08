@@ -1,24 +1,31 @@
 package database
 
 import (
+	"fmt"
 	"mercado/acoes/database/models"
+	"sync"
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"
 )
 
-func GetConnection(dbUri string) (db *gorm.DB) {
-	db, err := gorm.Open(sqlite.Open(dbUri), &gorm.Config{})
+func GetConnection(dbUri string) *gorm.DB {
+	var once sync.Once
+	var db *gorm.DB
 
-	if err != nil {
-		panic("failed to connect database")
-	}
+	once.Do(func() {
+		var err error
+		db, err = gorm.Open(sqlite.Open(dbUri), &gorm.Config{})
+		if err != nil {
+			panic("failed to connect database")
+		}
+		fmt.Println("Banco de dados conectado!")
 
-	err = Migrate(db)
-
-	if err != nil {
-		panic("failed to migrate database")
-	}
+		err = Migrate(db)
+		if err != nil {
+			panic("failed to migrate database")
+		}
+	})
 
 	return db
 }

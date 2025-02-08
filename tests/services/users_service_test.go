@@ -1,21 +1,15 @@
 package service_test
 
 import (
-	"mercado/acoes/database/repositories"
 	DTO "mercado/acoes/dto"
-	"mercado/acoes/services"
+	"mercado/acoes/handlers"
 	"testing"
 )
 
 func TestCreateUserServiceCreateUser(t *testing.T) {
 	tx, teardown := SetupTest(t)
 	defer teardown(t)
-
-	userHttpService := services.UsersHttpService{
-		UserRepository: repositories.UsersRepository{Db: tx},
-	}
-
-	response, status := userHttpService.CreateUser(DTO.CreateUser{
+	response, status := handlers.CreateUser(tx, DTO.CreateUser{
 		Name:    "John Doe",
 		Balance: 1000,
 	})
@@ -34,11 +28,7 @@ func TestFailToFindUserById(t *testing.T) {
 	tx, teardown := SetupTest(t)
 	defer teardown(t)
 
-	userHttpService := services.UsersHttpService{
-		UserRepository: repositories.UsersRepository{Db: tx},
-	}
-
-	response, status := userHttpService.FindUserById(1)
+	response, status := handlers.FindUserById(tx, 1)
 	if status != 404 {
 		t.Errorf("Expected status 404, got %d", status)
 	}
@@ -53,11 +43,7 @@ func TestFailToFindAllUsers(t *testing.T) {
 	tx, teardown := SetupTest(t)
 	defer teardown(t)
 
-	userHttpService := services.UsersHttpService{
-		UserRepository: repositories.UsersRepository{Db: tx},
-	}
-
-	response, status := userHttpService.FindAllUsers()
+	response, status := handlers.FindAllUsers(tx)
 	if status != 404 {
 		t.Errorf("Expected status 404, got %d", status)
 	}
@@ -72,11 +58,7 @@ func TestFindUserById(t *testing.T) {
 	tx, teardown := SetupTest(t)
 	defer teardown(t)
 
-	userHttpService := services.UsersHttpService{
-		UserRepository: repositories.UsersRepository{Db: tx},
-	}
-
-	_, status := userHttpService.CreateUser(DTO.CreateUser{
+	_, status := handlers.CreateUser(tx, DTO.CreateUser{
 		Name:    "John Doe",
 		Balance: 1000,
 	})
@@ -85,7 +67,7 @@ func TestFindUserById(t *testing.T) {
 		t.Errorf("Expected status 201, got %d", status)
 	}
 
-	response, status := userHttpService.FindUserById(1)
+	response, status := handlers.FindUserById(tx, 1)
 
 	if status != 200 {
 		t.Errorf("Expected status 200, got %d", status)
@@ -101,11 +83,7 @@ func TestFindAllUsers(t *testing.T) {
 	tx, teardown := SetupTest(t)
 	defer teardown(t)
 
-	userHttpService := services.UsersHttpService{
-		UserRepository: repositories.UsersRepository{Db: tx},
-	}
-
-	_, status := userHttpService.CreateUser(DTO.CreateUser{
+	_, status := handlers.CreateUser(tx, DTO.CreateUser{
 		Name:    "John Doe",
 		Balance: 1000,
 	})
@@ -114,13 +92,40 @@ func TestFindAllUsers(t *testing.T) {
 		t.Errorf("Expected status 201, got %d", status)
 	}
 
-	response, status := userHttpService.FindAllUsers()
+	response, status := handlers.FindAllUsers(tx)
 
 	if status != 200 {
 		t.Errorf("Expected status 200, got %d", status)
 	}
 
 	expectedResponse := `[{"user_id":1,"name":"John Doe","balance":1000}]`
+	if string(response) != expectedResponse {
+		t.Errorf("Expected response %s, got %s", expectedResponse, string(response))
+	}
+}
+
+func TestUpdateUser(t *testing.T) {
+	tx, teardown := SetupTest(t)
+	defer teardown(t)
+
+	_, status := handlers.CreateUser(tx, DTO.CreateUser{
+		Name:    "John Doe",
+		Balance: 1000,
+	})
+
+	if status != 201 {
+		t.Errorf("Expected status 201, got %d", status)
+	}
+
+	response, status := handlers.UpdateUser(tx, 1, DTO.UpdateUser{
+		Name: "Jane Doe",
+	})
+
+	if status != 200 {
+		t.Errorf("Expected status 200, got %d", status)
+	}
+
+	expectedResponse := `{"message":"User updated successfully."}`
 	if string(response) != expectedResponse {
 		t.Errorf("Expected response %s, got %s", expectedResponse, string(response))
 	}

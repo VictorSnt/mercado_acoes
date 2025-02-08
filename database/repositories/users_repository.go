@@ -44,6 +44,12 @@ func (repo UsersRepository) FindById(id uint) (DTO.DisplayUser, error) {
 	return userDTO, result.Error
 }
 
+func (repo UsersRepository) Update(id uint, user interface{}) error {
+	statment := repo.Db.Model(&models.User{}).Where("id = ?", id)
+	result := statment.Updates(user)
+	return result.Error
+}
+
 func parseUserModelToDTO(user models.User) DTO.DisplayUser {
 	return DTO.DisplayUser{
 		ID:      user.ID,

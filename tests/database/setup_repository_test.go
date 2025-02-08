@@ -11,7 +11,7 @@ import (
 var db *gorm.DB
 
 func TestMain(m *testing.M) {
-	dbUri := os.Getenv("TEST_DATABASE_URI")
+	dbUri := "../test.db"
 	db = database.GetConnection(dbUri)
 	code := m.Run()
 	os.Exit(code)

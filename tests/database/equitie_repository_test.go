@@ -9,7 +9,7 @@ import (
 )
 
 func createEquitie(t *testing.T, tx *gorm.DB, newEquitie DTO.CreateEquitie) {
-	err := repositories.EquitieRepository{Db: tx}.Create(newEquitie)
+	err := repositories.EquitiesRepository{Db: tx}.Create(newEquitie)
 
 	if err != nil {
 		t.Fatalf("Error creating equitie %s: %v", newEquitie.Name, err)
@@ -37,7 +37,7 @@ func TestGetEquitieById(t *testing.T) {
 		PriceChangePercentage: 10,
 	})
 
-	equitie, err := repositories.EquitieRepository{Db: tx}.FindById(1)
+	equitie, err := repositories.EquitiesRepository{Db: tx}.FindById(1)
 
 	if err != nil {
 		t.Errorf("Error getting equitie by id: %v", err)
@@ -68,7 +68,7 @@ func TestFindListOfEquities(t *testing.T) {
 		PriceChangePercentage: 30,
 	})
 
-	equities, err := repositories.EquitieRepository{Db: tx}.FindAll()
+	equities, err := repositories.EquitiesRepository{Db: tx}.FindAll()
 
 	if err != nil {
 		t.Errorf("Error getting list of equities: %v", err)

@@ -63,6 +63,22 @@ func (repo TransactionsRepository) FindByEquitieId(equitieId uint) (
 	return transactionsDtoList, result.Error
 }
 
+func (repo TransactionsRepository) FindByUserIdAndEquitieId(userId, equitieId uint) (
+
+	transactionsDtoList []DTO.DisplayTransaction,
+	err error,
+) {
+	var transactions []models.Transaction
+	result := repo.Db.Where("user_id = ? AND equitie_id = ?", userId, equitieId).Find(&transactions)
+
+	for _, transaction := range transactions {
+		transactionsDTO := parseTransactionModelToDTO(transaction)
+		transactionsDtoList = append(transactionsDtoList, transactionsDTO)
+	}
+
+	return transactionsDtoList, result.Error
+}
+
 func parseTransactionModelToDTO(transaction models.Transaction) DTO.DisplayTransaction {
 	return DTO.DisplayTransaction{
 		ID:              transaction.ID,

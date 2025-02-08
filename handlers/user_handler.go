@@ -1,18 +1,17 @@
-package services
+package handlers
 
 import (
 	"encoding/json"
 	"mercado/acoes/database/repositories"
 	DTO "mercado/acoes/dto"
 	"net/http"
+
+	"gorm.io/gorm"
 )
 
-type UsersHttpService struct {
-	UserRepository repositories.UsersRepository
-}
-
-func (us UsersHttpService) CreateUser(newUser DTO.CreateUser) ([]byte, int) {
-	err := us.UserRepository.Create(newUser)
+func CreateUser(db *gorm.DB, newUser DTO.CreateUser) ([]byte, int) {
+	UserRepository := repositories.UsersRepository{Db: db}
+	err := UserRepository.Create(newUser)
 	if err != nil {
 		errorResponse := map[string]string{"error": err.Error()}
 		response, _ := json.Marshal(errorResponse)
@@ -23,8 +22,9 @@ func (us UsersHttpService) CreateUser(newUser DTO.CreateUser) ([]byte, int) {
 	return response, http.StatusCreated
 }
 
-func (us UsersHttpService) FindUserById(id uint) ([]byte, int) {
-	user, err := us.UserRepository.FindById(id)
+func FindUserById(db *gorm.DB, id uint) ([]byte, int) {
+	UserRepository := repositories.UsersRepository{Db: db}
+	user, err := UserRepository.FindById(id)
 	if err != nil {
 		errorResponse := map[string]string{"error": err.Error()}
 		response, _ := json.Marshal(errorResponse)
@@ -44,8 +44,9 @@ func (us UsersHttpService) FindUserById(id uint) ([]byte, int) {
 	return response, http.StatusOK
 }
 
-func (us UsersHttpService) FindAllUsers() ([]byte, int) {
-	users, err := us.UserRepository.FindAll()
+func FindAllUsers(db *gorm.DB) ([]byte, int) {
+	UserRepository := repositories.UsersRepository{Db: db}
+	users, err := UserRepository.FindAll()
 	if err != nil {
 		errorResponse := map[string]string{"error": err.Error()}
 		response, _ := json.Marshal(errorResponse)
@@ -61,5 +62,18 @@ func (us UsersHttpService) FindAllUsers() ([]byte, int) {
 		response, _ := json.Marshal(errorResponse)
 		return response, http.StatusInternalServerError
 	}
+	return response, http.StatusOK
+}
+
+func UpdateUser(db *gorm.DB, id uint, updatedUser DTO.UpdateUser) ([]byte, int) {
+	UserRepository := repositories.UsersRepository{Db: db}
+	err := UserRepository.Update(id, updatedUser)
+	if err != nil {
+		errorResponse := map[string]string{"error": err.Error()}
+		response, _ := json.Marshal(errorResponse)
+		return response, http.StatusBadRequest
+	}
+
+	response, _ := json.Marshal(map[string]string{"message": "User updated successfully."})
 	return response, http.StatusOK
 }

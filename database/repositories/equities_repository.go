@@ -7,11 +7,11 @@ import (
 	"gorm.io/gorm"
 )
 
-type EquitieRepository struct {
+type EquitiesRepository struct {
 	Db *gorm.DB
 }
 
-func (repo EquitieRepository) Create(equitie DTO.CreateEquitie) error {
+func (repo EquitiesRepository) Create(equitie DTO.CreateEquitie) error {
 	result := repo.Db.Create(
 		&models.Equitie{
 			Name:                  equitie.Name,
@@ -23,7 +23,7 @@ func (repo EquitieRepository) Create(equitie DTO.CreateEquitie) error {
 	return result.Error
 }
 
-func (repo EquitieRepository) FindAll() (equitiesDtoList []DTO.DisplayEquitie, err error) {
+func (repo EquitiesRepository) FindAll() (equitiesDtoList []DTO.DisplayEquitie, err error) {
 	var equities []models.Equitie
 	result := repo.Db.Find(&equities)
 
@@ -39,12 +39,18 @@ func (repo EquitieRepository) FindAll() (equitiesDtoList []DTO.DisplayEquitie, e
 	return equitiesDtoList, result.Error
 }
 
-func (repo EquitieRepository) FindById(id uint) (DTO.DisplayEquitie, error) {
+func (repo EquitiesRepository) FindById(id uint) (DTO.DisplayEquitie, error) {
 	var equitie models.Equitie
 	result := repo.Db.First(&equitie, id)
 
 	equitieDTO := parseEquitieModelToDTO(equitie)
 	return equitieDTO, result.Error
+}
+
+func (repo EquitiesRepository) Update(id uint, equitie interface{}) error {
+	statment := repo.Db.Model(&models.Equitie{}).Where("id = ?", id)
+	result := statment.Updates(equitie)
+	return result.Error
 }
 
 func parseEquitieModelToDTO(equitie models.Equitie) DTO.DisplayEquitie {

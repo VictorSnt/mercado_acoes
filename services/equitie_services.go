@@ -24,13 +24,13 @@ func UpdateEquitiePrice(
 	}
 
 	if transactionType == enums.TransactionBuyOperation {
-		currentPrice := equitie.CurrentPrince + (equitie.CurrentPrince * equitie.PriceChangePercentage / 100)
-		return DTO.UpdateEquitiePrice{CurrentPrince: currentPrice}, nil
+		currentPrice := equitie.CurrentPrice + (equitie.CurrentPrice * equitie.PriceChangePercentage / 100)
+		return DTO.UpdateEquitiePrice{CurrentPrice: currentPrice}, nil
 	}
 
 	if transactionType == enums.TransactionSaleOperation {
-		currentPrice := equitie.CurrentPrince - (equitie.CurrentPrince * equitie.PriceChangePercentage / 100)
-		return DTO.UpdateEquitiePrice{CurrentPrince: currentPrice}, nil
+		currentPrice := equitie.CurrentPrice - (equitie.CurrentPrice * equitie.PriceChangePercentage / 100)
+		return DTO.UpdateEquitiePrice{CurrentPrice: currentPrice}, nil
 	}
 
 	return DTO.UpdateEquitiePrice{}, errors.New("invalid transaction type")
@@ -57,7 +57,7 @@ func ValidadeUserEquitieTransaction(
 	}
 
 	if newTransaction.Type == string(enums.TransactionBuyOperation) {
-		if user.Balance < (equitie.CurrentPrince * float64(newTransaction.Quantity)) {
+		if user.Balance < (equitie.CurrentPrice * float64(newTransaction.Quantity)) {
 			return errors.New("insufficient balance")
 		}
 		return nil

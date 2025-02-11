@@ -25,7 +25,7 @@ func (repo TransactionsRepository) Create(transaction DTO.CreateTransaction) err
 			EquitieID:       transaction.EquitieID,
 			Type:            transaction.Type,
 			Quantity:        transaction.Quantity,
-			UnitPrice:       equitie.CurrentPrince,
+			UnitPrice:       equitie.CurrentPrice,
 			TransactionDate: transaction.TransactionDate,
 		},
 	)

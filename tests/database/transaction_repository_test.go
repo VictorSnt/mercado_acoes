@@ -23,7 +23,7 @@ func TestCreateNewTransaction(t *testing.T) {
 	createUser(t, tx, DTO.CreateUser{Name: "Test User", Balance: 1000})
 	createEquitie(t, tx, DTO.CreateEquitie{
 		Name:                  "Test Equitie",
-		CurrentPrince:         1000,
+		CurrentPrice:          1000,
 		PriceChangePercentage: 10,
 	})
 
@@ -42,7 +42,7 @@ func TestFindTransactionByUserID(t *testing.T) {
 	createUser(t, tx, DTO.CreateUser{Name: "Test User", Balance: 1000})
 	createEquitie(t, tx, DTO.CreateEquitie{
 		Name:                  "Test Equitie",
-		CurrentPrince:         1000,
+		CurrentPrice:          1000,
 		PriceChangePercentage: 10,
 	})
 

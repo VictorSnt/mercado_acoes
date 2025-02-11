@@ -22,7 +22,7 @@ func TestCreateNewEquitie(t *testing.T) {
 
 	createEquitie(t, tx, DTO.CreateEquitie{
 		Name:                  "Test Equitie",
-		CurrentPrince:         1000,
+		CurrentPrice:          1000,
 		PriceChangePercentage: 10,
 	})
 }
@@ -33,7 +33,7 @@ func TestGetEquitieById(t *testing.T) {
 
 	createEquitie(t, tx, DTO.CreateEquitie{
 		Name:                  "Test Equitie",
-		CurrentPrince:         1000,
+		CurrentPrice:          1000,
 		PriceChangePercentage: 10,
 	})
 
@@ -54,17 +54,17 @@ func TestFindListOfEquities(t *testing.T) {
 
 	createEquitie(t, tx, DTO.CreateEquitie{
 		Name:                  "Test Equitie",
-		CurrentPrince:         1000,
+		CurrentPrice:          1000,
 		PriceChangePercentage: 10,
 	})
 	createEquitie(t, tx, DTO.CreateEquitie{
 		Name:                  "Test Equitie2",
-		CurrentPrince:         2000,
+		CurrentPrice:          2000,
 		PriceChangePercentage: 20,
 	})
 	createEquitie(t, tx, DTO.CreateEquitie{
 		Name:                  "Test Equitie3",
-		CurrentPrince:         3000,
+		CurrentPrice:          3000,
 		PriceChangePercentage: 30,
 	})
 

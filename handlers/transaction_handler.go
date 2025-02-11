@@ -1,7 +1,6 @@
 package handlers
 
 import (
-	"encoding/json"
 	"fmt"
 	"mercado/acoes/database/repositories"
 	DTO "mercado/acoes/dto"
@@ -15,39 +14,36 @@ import (
 func CreateEquiteTransaction(
 	db *gorm.DB,
 	newTransaction DTO.CreateTransaction,
-
-) ([]byte, int) {
+) (map[string]string, int) {
 
 	TransactionRepository := repositories.TransactionsRepository{Db: db}
 	EquitiesRepository := repositories.EquitiesRepository{Db: db}
 
 	err := services.ValidadeUserEquitieTransaction(db, newTransaction)
-
 	if err != nil {
 		errorResponse := map[string]string{
 			"error": err.Error(),
 			"detail": fmt.Sprintf(
-				"invalid transaction for userID %d .",
+				"invalid transaction for userID %d.",
 				newTransaction.UserID,
 			),
 		}
-		response, _ := json.Marshal(errorResponse)
-		return response, http.StatusBadRequest
+		return errorResponse, http.StatusBadRequest
 	}
+
 	equitieDTO, err := EquitiesRepository.FindById(newTransaction.EquitieID)
 	if err != nil {
 		errorResponse := map[string]string{
 			"error": err.Error(),
 			"detail": fmt.Sprintf(
-				"error while finding equitie %d .",
+				"error while finding equitie %d.",
 				newTransaction.EquitieID,
 			),
 		}
-		response, _ := json.Marshal(errorResponse)
-		return response, http.StatusBadRequest
+		return errorResponse, http.StatusBadRequest
 	}
 
-	var transactionValue float64 = float64(newTransaction.Quantity) * equitieDTO.CurrentPrince
+	var transactionValue float64 = float64(newTransaction.Quantity) * equitieDTO.CurrentPrice
 	err = services.UpdateUserBalance(
 		db, newTransaction.UserID,
 		transactionValue,
@@ -57,19 +53,17 @@ func CreateEquiteTransaction(
 		errorResponse := map[string]string{
 			"error": err.Error(),
 			"detail": fmt.Sprintf(
-				"error while charging user %d .",
+				"error while charging user %d.",
 				newTransaction.UserID,
 			),
 		}
-		response, _ := json.Marshal(errorResponse)
-		return response, http.StatusBadRequest
+		return errorResponse, http.StatusBadRequest
 	}
 
 	err = TransactionRepository.Create(newTransaction)
 	if err != nil {
 		errorResponse := map[string]string{"error": err.Error()}
-		response, _ := json.Marshal(errorResponse)
-		return response, http.StatusBadRequest
+		return errorResponse, http.StatusBadRequest
 	}
 
 	equiteUpdateDTO, err := services.UpdateEquitiePrice(
@@ -82,8 +76,7 @@ func CreateEquiteTransaction(
 			"error":  err.Error(),
 			"detail": "Error while updating equitie price.",
 		}
-		response, _ := json.Marshal(errorResponse)
-		return response, http.StatusBadRequest
+		return errorResponse, http.StatusBadRequest
 	}
 
 	err = EquitiesRepository.Update(newTransaction.EquitieID, equiteUpdateDTO)
@@ -92,12 +85,25 @@ func CreateEquiteTransaction(
 			"error":  err.Error(),
 			"detail": "Error while updating equitie price.",
 		}
-		response, _ := json.Marshal(errorResponse)
-		return response, http.StatusBadRequest
+		return errorResponse, http.StatusBadRequest
 	}
 
-	response, _ := json.Marshal(map[string]string{
+	successResponse := map[string]string{
 		"message": "Transaction created successfully.",
-	})
-	return response, http.StatusCreated
+	}
+	return successResponse, http.StatusCreated
+}
+
+func FindTransactionByUserId(db *gorm.DB, id uint) (interface{}, int) {
+	TransactionRepository := repositories.TransactionsRepository{Db: db}
+	transaction, err := TransactionRepository.FindByUserId(id)
+	if err != nil {
+		errorResponse := map[string]string{
+			"error":   err.Error(),
+			"details": fmt.Sprintf("erro finding transaction by userID %d", id),
+		}
+		return errorResponse, http.StatusNotFound
+	}
+
+	return transaction, http.StatusOK
 }

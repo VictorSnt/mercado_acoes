@@ -15,7 +15,7 @@ func (repo EquitiesRepository) Create(equitie DTO.CreateEquitie) error {
 	result := repo.Db.Create(
 		&models.Equitie{
 			Name:                  equitie.Name,
-			CurrentPrince:         equitie.CurrentPrince,
+			CurrentPrice:          equitie.CurrentPrice,
 			PriceChangePercentage: equitie.PriceChangePercentage,
 		},
 	)
@@ -57,7 +57,7 @@ func parseEquitieModelToDTO(equitie models.Equitie) DTO.DisplayEquitie {
 	return DTO.DisplayEquitie{
 		ID:                    equitie.ID,
 		Name:                  equitie.Name,
-		CurrentPrince:         equitie.CurrentPrince,
+		CurrentPrice:          equitie.CurrentPrice,
 		PriceChangePercentage: equitie.PriceChangePercentage,
 	}
 }

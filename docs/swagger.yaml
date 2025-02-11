@@ -1,0 +1,457 @@
+basePath: /
+definitions:
+  DTO.CreateEquitie:
+    properties:
+      currentPrice:
+        type: number
+      name:
+        type: string
+      priceChangePercentage:
+        type: number
+    type: object
+  DTO.CreateTransaction:
+    properties:
+      equitieID:
+        type: integer
+      quantity:
+        type: integer
+      transactionDate:
+        type: string
+      type:
+        type: string
+      userID:
+        type: integer
+    type: object
+  DTO.CreateUser:
+    properties:
+      balance:
+        type: number
+      name:
+        type: string
+    type: object
+  DTO.DisplayEquitie:
+    properties:
+      current_price:
+        type: number
+      equitie_id:
+        type: integer
+      name:
+        type: string
+      price_change_percentage:
+        type: number
+    type: object
+  DTO.DisplayTransaction:
+    properties:
+      equitie_id:
+        type: integer
+      quantity:
+        type: integer
+      transaction_date:
+        type: string
+      transaction_id:
+        type: integer
+      type:
+        type: string
+      unit_price:
+        type: number
+      user_id:
+        type: integer
+    type: object
+  DTO.DisplayUser:
+    properties:
+      balance:
+        type: number
+      name:
+        type: string
+      user_id:
+        type: integer
+    type: object
+  DTO.DisplayUserEquities:
+    properties:
+      equitie_id:
+        type: integer
+      equitie_prince:
+        type: number
+      equitie_total_quantity:
+        type: integer
+      equitie_total_value:
+        type: number
+      user_id:
+        type: integer
+    type: object
+  DTO.UpdateEquitie:
+    properties:
+      name:
+        type: string
+    type: object
+  DTO.UpdateUser:
+    properties:
+      name:
+        type: string
+    type: object
+host: localhost:8080
+info:
+  contact: {}
+  description: API para verificar status de sites.
+  title: Monitor de Sites API
+  version: "1.0"
+paths:
+  /api/v1/equities:
+    get:
+      consumes:
+      - application/json
+      description: Get all equities
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/DTO.DisplayEquitie'
+            type: array
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all equities
+      tags:
+      - Equities
+    post:
+      consumes:
+      - application/json
+      description: Create a new equitie
+      parameters:
+      - description: Create Equitie
+        in: body
+        name: equitie
+        required: true
+        schema:
+          $ref: '#/definitions/DTO.CreateEquitie'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            $ref: '#/definitions/DTO.DisplayEquitie'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new equitie
+      tags:
+      - Equities
+  /api/v1/equities/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get an equitie by ID
+      parameters:
+      - description: Equitie ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DTO.DisplayEquitie'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get an equitie by ID
+      tags:
+      - Equities
+    put:
+      consumes:
+      - application/json
+      description: Update an existing equitie
+      parameters:
+      - description: Equitie ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update Equitie
+        in: body
+        name: equitie
+        required: true
+        schema:
+          $ref: '#/definitions/DTO.UpdateEquitie'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "500":
+          description: Internal Server Error
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update an existing equitie
+      tags:
+      - Equities
+  /api/v1/transactions:
+    post:
+      consumes:
+      - application/json
+      description: Create a new transaction with the input payload
+      parameters:
+      - description: Transaction payload
+        in: body
+        name: transaction
+        required: true
+        schema:
+          $ref: '#/definitions/DTO.CreateTransaction'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new transaction
+      tags:
+      - Transactions
+  /api/v1/transactions/user/{id}:
+    get:
+      consumes:
+      - application/json
+      description: Get all transactions for a user by user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: string
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/DTO.DisplayTransaction'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all transactions for a user
+      tags:
+      - Transactions
+  /api/v1/users:
+    get:
+      consumes:
+      - application/json
+      description: Get all users
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/DTO.DisplayUser'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get all users
+      tags:
+      - Users
+    post:
+      consumes:
+      - application/json
+      description: Create a new user
+      parameters:
+      - description: Create User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/DTO.CreateUser'
+      produces:
+      - application/json
+      responses:
+        "201":
+          description: Created
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Create a new user
+      tags:
+      - Users
+  /api/v1/users/{id}:
+    delete:
+      consumes:
+      - application/json
+      description: Delete a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Delete a user by ID
+      tags:
+      - Users
+    get:
+      consumes:
+      - application/json
+      description: Get a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            $ref: '#/definitions/DTO.DisplayUser'
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get a user by ID
+      tags:
+      - Users
+    put:
+      consumes:
+      - application/json
+      description: Update a user by ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      - description: Update User
+        in: body
+        name: user
+        required: true
+        schema:
+          $ref: '#/definitions/DTO.UpdateUser'
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Update a user by ID
+      tags:
+      - Users
+  /api/v1/users/{id}/equitiestocks:
+    get:
+      consumes:
+      - application/json
+      description: Get user's equity stocks by user ID
+      parameters:
+      - description: User ID
+        in: path
+        name: id
+        required: true
+        type: integer
+      produces:
+      - application/json
+      responses:
+        "200":
+          description: OK
+          schema:
+            items:
+              $ref: '#/definitions/DTO.DisplayUserEquities'
+            type: array
+        "400":
+          description: Bad Request
+          schema:
+            additionalProperties:
+              type: string
+            type: object
+      summary: Get user's equity stocks by user ID
+      tags:
+      - Users
+swagger: "2.0"

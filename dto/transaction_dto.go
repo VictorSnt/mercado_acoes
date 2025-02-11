@@ -19,3 +19,11 @@ type DisplayTransaction struct {
 	UnitPrice       float64   `json:"unit_price"`
 	TransactionDate time.Time `json:"transaction_date"`
 }
+
+type DisplayUserEquities struct {
+	UserID            uint    `json:"user_id"`
+	EquitieID         uint    `json:"equitie_id"`
+	TotalQuantity     uint    `json:"equitie_total_quantity"`
+	CurrentPrice      float64 `json:"equitie_prince"`
+	EquitieTotalValue float64 `json:"equitie_total_value"`
+}

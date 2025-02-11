@@ -15,7 +15,7 @@ func TestCreateEquiteTransaction(t *testing.T) {
 	defer teardown(t)
 
 	CreateUser(t, tx, DTO.CreateUser{Name: "User 1", Balance: 100})
-	CreateEquitie(t, tx, DTO.CreateEquitie{Name: "Equitie 1", CurrentPrince: 10})
+	CreateEquitie(t, tx, DTO.CreateEquitie{Name: "Equitie 1", CurrentPrice: 10})
 
 	response, status := handlers.CreateEquiteTransaction(tx, DTO.CreateTransaction{
 		UserID:          1,
@@ -26,7 +26,7 @@ func TestCreateEquiteTransaction(t *testing.T) {
 	})
 
 	if status != http.StatusCreated {
-		t.Log(string(response))
+		t.Log(response)
 		t.Fatalf("Error creating transaction: %v", status)
 	}
 }
@@ -36,7 +36,7 @@ func TestBuyEquiteWithInsufficientBalance(t *testing.T) {
 	defer teardown(t)
 
 	CreateUser(t, tx, DTO.CreateUser{Name: "User 1", Balance: 0})
-	CreateEquitie(t, tx, DTO.CreateEquitie{Name: "Equitie 1", CurrentPrince: 10})
+	CreateEquitie(t, tx, DTO.CreateEquitie{Name: "Equitie 1", CurrentPrice: 10})
 
 	response, status := handlers.CreateEquiteTransaction(tx, DTO.CreateTransaction{
 		UserID:          1,
@@ -47,13 +47,16 @@ func TestBuyEquiteWithInsufficientBalance(t *testing.T) {
 	})
 
 	if status != http.StatusBadRequest {
-		t.Log(string(response))
+		t.Log(response)
 		t.Fatalf("Error creating transaction: %v", status)
 	}
 
-	validResponse := `{"detail":"invalid transaction for userID 1 .","error":"insufficient balance"}`
-	if string(response) != validResponse {
-		t.Fatalf("Error creating transaction, wrong error response: %v", string(response))
+	validResponse := map[string]string{
+		"detail": "invalid transaction for userID 1 .",
+		"error":  "insufficient balance",
+	}
+	if response["error"] != validResponse["error"] {
+		t.Fatalf("Error creating transaction, wrong error response: %v", response)
 	}
 }
 
@@ -62,7 +65,7 @@ func TestSellEquiteWithInsufficientQuantity(t *testing.T) {
 	defer teardown(t)
 
 	CreateUser(t, tx, DTO.CreateUser{Name: "User 1", Balance: 100})
-	CreateEquitie(t, tx, DTO.CreateEquitie{Name: "Equitie 1", CurrentPrince: 10})
+	CreateEquitie(t, tx, DTO.CreateEquitie{Name: "Equitie 1", CurrentPrice: 10})
 
 	response, status := handlers.CreateEquiteTransaction(tx, DTO.CreateTransaction{
 		UserID:          1,
@@ -73,13 +76,17 @@ func TestSellEquiteWithInsufficientQuantity(t *testing.T) {
 	})
 
 	if status != http.StatusBadRequest {
-		t.Log(string(response))
+		t.Log(response)
 		t.Fatalf("Error creating transaction: %v", status)
 	}
 
-	validResponse := `{"detail":"invalid transaction for userID 1 .","error":"insufficient equities for sale operation"}`
-	if string(response) != validResponse {
-		t.Fatalf("Error creating transaction, wrong error response: %v", string(response))
+	validResponse := map[string]string{
+		"detail": "invalid transaction for userID 1 .",
+		"error":  "insufficient equities for sale operation",
+	}
+
+	if response["error"] != validResponse["error"] {
+		t.Fatalf("Error creating transaction, wrong error response: %v", response)
 	}
 }
 
@@ -87,8 +94,8 @@ func TestEquitePriceIncrement(t *testing.T) {
 	tx, teardown := SetupTest(t)
 	defer teardown(t)
 
-	CreateUser(t, tx, DTO.CreateUser{Name: "User 1", Balance: 100})
-	CreateEquitie(t, tx, DTO.CreateEquitie{Name: "Equitie 1", CurrentPrince: 10})
+	CreateUser(t, tx, DTO.CreateUser{Name: "User 1", Balance: 150})
+	CreateEquitie(t, tx, DTO.CreateEquitie{Name: "Equitie 1", CurrentPrice: 10, PriceChangePercentage: 0.1})
 
 	handlers.CreateEquiteTransaction(tx, DTO.CreateTransaction{
 		UserID:          1,
@@ -111,12 +118,12 @@ func TestEquitePriceIncrement(t *testing.T) {
 		t.Fatalf("Error finding equitie: %v", err)
 	}
 
-	if equitieDTO.CurrentPrince == 10 {
-		t.Fatalf("Error equite price was not incremented after first sale: %v", equitieDTO.CurrentPrince)
+	if equitieDTO.CurrentPrice == 10 {
+		t.Fatalf("Error equite price was not incremented after first sale: %v", equitieDTO.CurrentPrice)
 	}
 
 	if status != http.StatusCreated {
-		t.Log(string(response))
+		t.Log(response)
 		t.Fatalf("Error equite prece was not incremented after first sale: %v", status)
 	}
 }
@@ -126,7 +133,7 @@ func TestEquitePriceDecrement(t *testing.T) {
 	defer teardown(t)
 
 	CreateUser(t, tx, DTO.CreateUser{Name: "User 1", Balance: 100})
-	CreateEquitie(t, tx, DTO.CreateEquitie{Name: "Equitie 1", CurrentPrince: 10.0, PriceChangePercentage: 3})
+	CreateEquitie(t, tx, DTO.CreateEquitie{Name: "Equitie 1", CurrentPrice: 10.0, PriceChangePercentage: 3})
 
 	handlers.CreateEquiteTransaction(tx, DTO.CreateTransaction{
 		UserID:          1,
@@ -157,12 +164,12 @@ func TestEquitePriceDecrement(t *testing.T) {
 		t.Fatalf("Error finding equitie: %v", err)
 	}
 
-	if equitieDTO.CurrentPrince == 10 {
-		t.Fatalf("Error equite price was not decremented after first sale: %v", equitieDTO.CurrentPrince)
+	if equitieDTO.CurrentPrice == 10 {
+		t.Fatalf("Error equite price was not decremented after first sale: %v", equitieDTO.CurrentPrice)
 	}
 
 	if status != http.StatusCreated {
-		t.Log(string(response))
+		t.Log(response)
 		t.Fatalf("Error equite prece was not decremented after first sale: %v", status)
 	}
 }

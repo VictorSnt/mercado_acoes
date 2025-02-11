@@ -22,7 +22,7 @@ func (repo UsersRepository) Create(user DTO.CreateUser) error {
 
 func (repo UsersRepository) FindAll() (userDtoList []DTO.DisplayUser, err error) {
 	var users []models.User
-	result := repo.Db.Find(&users)
+	result := repo.Db.Where("deleted_at IS NULL").Find(&users)
 
 	if len(users) == 0 {
 		return userDtoList, gorm.ErrRecordNotFound
@@ -56,4 +56,42 @@ func parseUserModelToDTO(user models.User) DTO.DisplayUser {
 		Name:    user.Name,
 		Balance: user.Balance,
 	}
+}
+
+func (repo UsersRepository) Delete(id uint) error {
+	result := repo.Db.Delete(&models.User{}, "id = ?", id)
+	return result.Error
+}
+
+func (repo UsersRepository) FindEquities(userID uint) (
+	userStocks []DTO.DisplayUserEquities,
+	err error,
+) {
+	subQuery := repo.Db.Model(&models.Transaction{}).
+		Select(`
+        transactions.user_id, 
+        transactions.equitie_id, 
+        equities.current_price, 
+        SUM(CASE WHEN transactions.type = ? THEN transactions.quantity ELSE -transactions.quantity END) AS total_quantity`,
+			"BUY").
+		Joins(`
+        JOIN equities ON equities.id = transactions.equitie_id`).
+		Where("transactions.user_id = ?", userID).
+		Group(`
+        transactions.equitie_id, 
+        equities.current_price`).
+		Having(`
+        SUM(CASE WHEN transactions.type = ? THEN transactions.quantity ELSE -transactions.quantity END) > 0`,
+			"BUY")
+
+	err = repo.Db.Table("(?) as stock_totals", subQuery).
+		Select(`
+		user_id,
+        equitie_id, 
+        current_price, 
+        total_quantity, 
+        current_price * total_quantity AS equitie_total_value`).
+		Find(&userStocks).Error
+
+	return userStocks, err
 }
